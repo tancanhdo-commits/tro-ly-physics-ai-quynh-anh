@@ -8,8 +8,7 @@ type Chapter = { name: string; lessons: Lesson[] };
 
 /* ================== DATA ================== */
 const physicsData: Record<string, Chapter[]> = {
-  /* ================== LỚP 10 ================== */
-  "10": [
+    "10": [
     {
       name: "Chương 1 – Mở đầu",
       lessons: [
@@ -158,6 +157,7 @@ const physicsData: Record<string, Chapter[]> = {
   ]
 };
 
+
 /* ================== UI HELPERS ================== */
 function Card({
   title,
@@ -229,13 +229,23 @@ export default function Page() {
       ? chapters[chapterIndex]?.lessons ?? []
       : [];
 
+  const progress =
+    grade === null
+      ? "25%"
+      : chapterIndex === null
+      ? "50%"
+      : lessonIndex === null
+      ? "75%"
+      : "100%";
+
   const handleGenerate = async () => {
     if (grade === null || chapterIndex === null || lessonIndex === null) return;
 
     const examBlock = includeExam
       ? `
 III. CÂU HỎI ĐÃ RA TRONG ĐỀ THI TN THPT (${examYears} NĂM GẦN ĐÂY)
-- Easy – Medium – Hard
+- Phân loại Easy – Medium – Hard
+- KHÔNG hiển thị tick, đáp án hoặc dấu hiệu nhận biết đáp án đúng
 `
       : "";
 
@@ -251,8 +261,8 @@ YÊU CẦU:
 I. Lý thuyết trọng tâm
 II. Công thức & lỗi dễ sai
 ${examBlock}
-IV. Trắc nghiệm 8–12 câu
-V. Giải chi tiết câu khó
+IV. Trắc nghiệm 8–12 câu (không hiển thị đáp án)
+V. Giải chi tiết câu khó (dành cho giáo viên)
 `;
 
     await navigator.clipboard.writeText(prompt);
@@ -270,12 +280,73 @@ V. Giải chi tiết câu khó
         color: "#e3f2fd"
       }}
     >
-      <header style={{ textAlign: "center", marginBottom: 40 }}>
-        <h1 style={{ fontSize: 42 }}>⚛ Physics AI Assistant</h1>
-        <p style={{ fontSize: 20, color: "#ffd54f" }}>
-          Công cụ tạo đề & worksheet ôn thi TN THPT
+      {/* ANIMATION */}
+      <style>
+        {`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}
+      </style>
+
+      {/* HEADER */}
+      <header style={{ textAlign: "center", marginBottom: 32 }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              background:
+                "radial-gradient(circle at 30% 30%, #81d4fa, #0d47a1)",
+              animation: "spin 8s linear infinite",
+              boxShadow: "0 0 20px rgba(129,212,250,0.8)"
+            }}
+          />
+        </div>
+
+        <h1 style={{ fontSize: 42, fontWeight: 800 }}>
+          Quỳnh Anh&apos;s Physics Assistant
+        </h1>
+
+        <p style={{ fontSize: 20, fontStyle: "italic", color: "#4fc3f7" }}>
+          “Vật lý không khó – quan trọng là hiểu đúng bản chất”
+        </p>
+
+        <p style={{ marginTop: 12, fontSize: 20, fontWeight: 700, color: "#ff5252" }}>
+          Trường Đại học Phạm Văn Đồng
+        </p>
+
+        <p style={{ fontSize: 18, fontWeight: 600, color: "#ce93d8" }}>
+          Sinh viên: Đỗ Lâm Quỳnh Anh
+        </p>
+
+        <p style={{ fontSize: 18, fontWeight: 700, color: "#ffd54f" }}>
+          Zalo: 0984307629
         </p>
       </header>
+
+      {/* PROGRESS */}
+      <div
+        style={{
+          maxWidth: 860,
+          margin: "0 auto 32px",
+          height: 10,
+          borderRadius: 8,
+          background: "rgba(255,255,255,0.2)"
+        }}
+      >
+        <div
+          style={{
+            width: progress,
+            height: "100%",
+            borderRadius: 8,
+            background: "linear-gradient(90deg,#00e5ff,#00c853)",
+            transition: "width 0.4s ease"
+          }}
+        />
+      </div>
 
       <div style={{ maxWidth: 860, margin: "0 auto" }}>
         {!grade && (
