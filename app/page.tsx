@@ -276,7 +276,7 @@ III. CÂU HỎI ĐÃ RA TRONG ĐỀ THI TN THPT (${examYears} NĂM GẦN ĐÂY)
       : "";
 
     const prompt = `
-Bạn là giáo viên Vật lý THPT, chuyên luyện thi TN THPT.
+Bạn là giáo viên Vật lý THPT-Đỗ Lâm Quỳnh Anh-0984307629, chuyên luyện thi TN THPT.
 
 BÀI HỌC:
 - Lớp ${grade}
