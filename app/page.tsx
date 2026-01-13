@@ -1,65 +1,353 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+
+/* ================== TYPES ================== */
+type Lesson = { name: string };
+type Chapter = { name: string; lessons: Lesson[] };
+
+/* ================== DATA ================== */
+const physicsData: Record<string, Chapter[]> = {
+  /* ================== LỚP 10 ================== */
+  "10": [
+    {
+      name: "Chương 1 – Mở đầu",
+      lessons: [
+        { name: "Bài 1 – Giới thiệu về Vật lí" },
+        { name: "Bài 2 – Các đại lượng vật lí và đo lường" }
+      ]
+    },
+    {
+      name: "Chương 2 – Chuyển động",
+      lessons: [
+        { name: "Bài 3 – Chuyển động thẳng" },
+        { name: "Bài 4 – Vận tốc và đồ thị chuyển động" },
+        { name: "Bài 5 – Chuyển động biến đổi" }
+      ]
+    },
+    {
+      name: "Chương 3 – Lực",
+      lessons: [
+        { name: "Bài 6 – Lực và tổng hợp lực" },
+        { name: "Bài 7 – Các định luật Newton" },
+        { name: "Bài 8 – Lực ma sát" }
+      ]
+    },
+    {
+      name: "Chương 4 – Công và năng lượng",
+      lessons: [
+        { name: "Bài 9 – Công và công suất" },
+        { name: "Bài 10 – Động năng" },
+        { name: "Bài 11 – Thế năng" },
+        { name: "Bài 12 – Cơ năng" }
+      ]
+    },
+    {
+      name: "Chương 5 – Động lượng",
+      lessons: [
+        { name: "Bài 13 – Động lượng" },
+        { name: "Bài 14 – Định luật bảo toàn động lượng" }
+      ]
+    }
+  ],
+
+  /* ================== LỚP 11 ================== */
+  "11": [
+    {
+      name: "Chương 1 – Dao động",
+      lessons: [
+        { name: "Bài 1 – Dao động điều hòa" },
+        { name: "Bài 2 – Con lắc lò xo" },
+        { name: "Bài 3 – Con lắc đơn" },
+        { name: "Bài 4 – Năng lượng trong dao động điều hòa" },
+        { name: "Bài 5 – Dao động tắt dần – Dao động cưỡng bức – Cộng hưởng" }
+      ]
+    },
+    {
+      name: "Chương 2 – Sóng",
+      lessons: [
+        { name: "Bài 6 – Sóng cơ" },
+        { name: "Bài 7 – Các đặc trưng của sóng" },
+        { name: "Bài 8 – Giao thoa sóng" },
+        { name: "Bài 9 – Sóng dừng" }
+      ]
+    },
+    {
+      name: "Chương 3 – Điện trường",
+      lessons: [
+        { name: "Bài 10 – Điện tích. Điện trường" },
+        { name: "Bài 11 – Công của lực điện. Hiệu điện thế" },
+        { name: "Bài 12 – Tụ điện" }
+      ]
+    },
+    {
+      name: "Chương 4 – Dòng điện không đổi",
+      lessons: [
+        { name: "Bài 13 – Dòng điện không đổi" },
+        { name: "Bài 14 – Định luật Ôm" },
+        { name: "Bài 15 – Ghép nguồn điện" }
+      ]
+    },
+    {
+      name: "Chương 5 – Từ trường và Cảm ứng điện từ",
+      lessons: [
+        { name: "Bài 16 – Từ trường" },
+        { name: "Bài 17 – Lực từ" },
+        { name: "Bài 18 – Cảm ứng điện từ" }
+      ]
+    }
+  ],
+
+  /* ================== LỚP 12 ================== */
+  "12": [
+    {
+      name: "Chương 1 – Dao động cơ",
+      lessons: [
+        { name: "Bài 1 – Dao động điều hòa" },
+        { name: "Bài 2 – Con lắc lò xo" },
+        { name: "Bài 3 – Con lắc đơn" },
+        { name: "Bài 4 – Năng lượng trong dao động điều hòa" },
+        { name: "Bài 5 – Dao động tắt dần – Dao động cưỡng bức – Cộng hưởng" }
+      ]
+    },
+    {
+      name: "Chương 2 – Sóng cơ",
+      lessons: [
+        { name: "Bài 6 – Sóng cơ" },
+        { name: "Bài 7 – Các đặc trưng của sóng" },
+        { name: "Bài 8 – Giao thoa sóng" },
+        { name: "Bài 9 – Sóng dừng" }
+      ]
+    },
+    {
+      name: "Chương 3 – Dòng điện xoay chiều",
+      lessons: [
+        { name: "Bài 10 – Dòng điện xoay chiều" },
+        { name: "Bài 11 – Mạch điện xoay chiều RLC nối tiếp" },
+        { name: "Bài 12 – Công suất điện xoay chiều" },
+        { name: "Bài 13 – Máy biến áp – Truyền tải điện năng" }
+      ]
+    },
+    {
+      name: "Chương 4 – Sóng điện từ",
+      lessons: [
+        { name: "Bài 14 – Dao động điện từ" },
+        { name: "Bài 15 – Sóng điện từ" },
+        { name: "Bài 16 – Truyền thông bằng sóng điện từ" }
+      ]
+    },
+    {
+      name: "Chương 5 – Lượng tử ánh sáng",
+      lessons: [
+        { name: "Bài 17 – Hiện tượng quang điện" },
+        { name: "Bài 18 – Thuyết lượng tử ánh sáng" },
+        { name: "Bài 19 – Các loại quang phổ" },
+        { name: "Bài 20 – Laser" }
+      ]
+    },
+    {
+      name: "Chương 6 – Hạt nhân nguyên tử",
+      lessons: [
+        { name: "Bài 21 – Cấu tạo hạt nhân" },
+        { name: "Bài 22 – Năng lượng liên kết hạt nhân" },
+        { name: "Bài 23 – Phản ứng hạt nhân" },
+        { name: "Bài 24 – Phân hạch và nhiệt hạch" },
+        { name: "Bài 25 – Ứng dụng năng lượng hạt nhân" }
+      ]
+    }
+  ]
+};
+
+/* ================== UI HELPERS ================== */
+function Card({
+  title,
+  children
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div
+      style={{
+        marginBottom: 24,
+        padding: 24,
+        borderRadius: 20,
+        background: "rgba(255,255,255,0.08)"
+      }}
+    >
+      <h2 style={{ fontSize: 22, fontWeight: 700, color: "#80d8ff" }}>
+        {title}
+      </h2>
+      <div style={{ marginTop: 16 }}>{children}</div>
     </div>
+  );
+}
+
+function OptionList({
+  items,
+  onSelect
+}: {
+  items: string[];
+  onSelect: (i: number) => void;
+}) {
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      {items.map((item, i) => (
+        <button
+          key={i}
+          onClick={() => onSelect(i)}
+          style={{
+            padding: "14px 18px",
+            borderRadius: 14,
+            border: "1px solid rgba(255,255,255,0.2)",
+            background: "rgba(0,0,0,0.25)",
+            color: "#e3f2fd",
+            fontSize: 18,
+            textAlign: "left",
+            cursor: "pointer"
+          }}
+        >
+          {item}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ================== PAGE ================== */
+export default function Page() {
+  const [grade, setGrade] = useState<number | null>(null);
+  const [chapterIndex, setChapterIndex] = useState<number | null>(null);
+  const [lessonIndex, setLessonIndex] = useState<number | null>(null);
+
+  const [includeExam, setIncludeExam] = useState(true);
+  const [examYears, setExamYears] = useState<1 | 3 | 5>(3);
+
+  const chapters = grade ? physicsData[String(grade)] : [];
+  const lessons =
+    grade !== null && chapterIndex !== null
+      ? chapters[chapterIndex]?.lessons ?? []
+      : [];
+
+  const handleGenerate = async () => {
+    if (grade === null || chapterIndex === null || lessonIndex === null) return;
+
+    const examBlock = includeExam
+      ? `
+III. CÂU HỎI ĐÃ RA TRONG ĐỀ THI TN THPT (${examYears} NĂM GẦN ĐÂY)
+- Easy – Medium – Hard
+`
+      : "";
+
+    const prompt = `
+Bạn là giáo viên Vật lý THPT, chuyên luyện thi TN THPT.
+
+BÀI HỌC:
+- Lớp ${grade}
+- ${chapters[chapterIndex].name}
+- ${lessons[lessonIndex].name}
+
+YÊU CẦU:
+I. Lý thuyết trọng tâm
+II. Công thức & lỗi dễ sai
+${examBlock}
+IV. Trắc nghiệm 8–12 câu
+V. Giải chi tiết câu khó
+`;
+
+    await navigator.clipboard.writeText(prompt);
+    window.open("https://www.canva.com/ai/code", "_blank");
+  };
+
+  return (
+    <main
+      style={{
+        minHeight: "100vh",
+        padding: 40,
+        background:
+          "radial-gradient(circle at top,#1a237e 0%,#0b0f2a 50%,#050816 100%)",
+        fontFamily: "system-ui",
+        color: "#e3f2fd"
+      }}
+    >
+      <header style={{ textAlign: "center", marginBottom: 40 }}>
+        <h1 style={{ fontSize: 42 }}>⚛ Physics AI Assistant</h1>
+        <p style={{ fontSize: 20, color: "#ffd54f" }}>
+          Công cụ tạo đề & worksheet ôn thi TN THPT
+        </p>
+      </header>
+
+      <div style={{ maxWidth: 860, margin: "0 auto" }}>
+        {!grade && (
+          <Card title="Bước 1 – Chọn lớp">
+            <OptionList
+              items={["Lớp 10", "Lớp 11", "Lớp 12"]}
+              onSelect={(i) => setGrade(i + 10)}
+            />
+          </Card>
+        )}
+
+        {grade && chapterIndex === null && (
+          <Card title="Bước 2 – Chọn chương">
+            <OptionList
+              items={chapters.map((c) => c.name)}
+              onSelect={setChapterIndex}
+            />
+          </Card>
+        )}
+
+        {chapterIndex !== null && lessonIndex === null && (
+          <Card title="Bước 3 – Chọn bài">
+            <OptionList
+              items={lessons.map((l) => l.name)}
+              onSelect={setLessonIndex}
+            />
+          </Card>
+        )}
+
+        {lessonIndex !== null && (
+          <Card title="Cấu hình đề">
+            <label style={{ display: "flex", gap: 12 }}>
+              <input
+                type="checkbox"
+                checked={includeExam}
+                onChange={(e) => setIncludeExam(e.target.checked)}
+              />
+              Bao gồm câu hỏi TN THPT
+            </label>
+
+            {includeExam && (
+              <select
+                style={{ marginTop: 12 }}
+                value={examYears}
+                onChange={(e) =>
+                  setExamYears(Number(e.target.value) as 1 | 3 | 5)
+                }
+              >
+                <option value={1}>1 năm</option>
+                <option value={3}>3 năm</option>
+                <option value={5}>5 năm</option>
+              </select>
+            )}
+
+            <button
+              onClick={handleGenerate}
+              style={{
+                marginTop: 24,
+                width: "100%",
+                padding: 18,
+                fontSize: 22,
+                fontWeight: 800,
+                borderRadius: 16,
+                border: "none",
+                background: "linear-gradient(90deg,#00e5ff,#00c853)"
+              }}
+            >
+              🚀 Generate Worksheet
+            </button>
+          </Card>
+        )}
+      </div>
+    </main>
   );
 }
