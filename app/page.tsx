@@ -183,6 +183,7 @@ function Card({
   );
 }
 
+/* ✅ FIX LỖI: OptionList đúng cú pháp */
 function OptionList({
   items,
   onSelect
@@ -214,211 +215,29 @@ function OptionList({
   );
 }
 
-/* ================== PAGE ================== */
-export default function Page() {
-  const [grade, setGrade] = useState<number | null>(null);
-  const [chapterIndex, setChapterIndex] = useState<number | null>(null);
-  const [lessonIndex, setLessonIndex] = useState<number | null>(null);
-
-  const [includeExam, setIncludeExam] = useState(true);
-  const [examYears, setExamYears] = useState<1 | 3 | 5>(3);
-
-  const chapters = grade ? physicsData[String(grade)] : [];
-  const lessons =
-    grade !== null && chapterIndex !== null
-      ? chapters[chapterIndex]?.lessons ?? []
-      : [];
-
-  const progress =
-    grade === null
-      ? "25%"
-      : chapterIndex === null
-      ? "50%"
-      : lessonIndex === null
-      ? "75%"
-      : "100%";
-
-  const handleGenerate = async () => {
-    if (grade === null || chapterIndex === null || lessonIndex === null) return;
-
-    const examBlock = includeExam
-      ? `
-III. CÂU HỎI ĐÃ RA TRONG ĐỀ THI TN THPT (${examYears} NĂM GẦN ĐÂY)
-- Phân loại Easy – Medium – Hard
-- KHÔNG hiển thị tick, đáp án hoặc dấu hiệu nhận biết đáp án đúng
-`
-      : "";
-
-    const prompt = `
-Bạn là giáo viên Vật lý THPT, chuyên luyện thi TN THPT.
-
-BÀI HỌC:
-- Lớp ${grade}
-- ${chapters[chapterIndex].name}
-- ${lessons[lessonIndex].name}
-
-YÊU CẦU:
-I. Lý thuyết trọng tâm
-II. Công thức & lỗi dễ sai
-${examBlock}
-IV. Trắc nghiệm 8–12 câu (không hiển thị đáp án)
-V. Giải chi tiết câu khó (dành cho giáo viên)
-`;
-
-    await navigator.clipboard.writeText(prompt);
-    window.open("https://www.canva.com/ai/code", "_blank");
-  };
-
+/* ✅ FIX LỖI: ResetButton tách riêng */
+function ResetButton({
+  label,
+  onClick
+}: {
+  label: string;
+  onClick: () => void;
+}) {
   return (
-    <main
+    <button
+      onClick={onClick}
       style={{
-        minHeight: "100vh",
-        padding: 40,
-        background:
-          "radial-gradient(circle at top,#1a237e 0%,#0b0f2a 50%,#050816 100%)",
-        fontFamily: "system-ui",
-        color: "#e3f2fd"
+        marginTop: 10,
+        padding: "6px 14px",
+        fontSize: 14,
+        borderRadius: 999,
+        border: "1px solid rgba(255,255,255,0.25)",
+        background: "rgba(255,255,255,0.08)",
+        color: "#ffcc80",
+        cursor: "pointer"
       }}
     >
-      {/* ANIMATION */}
-      <style>
-        {`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}
-      </style>
-
-      {/* HEADER */}
-      <header style={{ textAlign: "center", marginBottom: 32 }}>
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle at 30% 30%, #81d4fa, #0d47a1)",
-              animation: "spin 8s linear infinite",
-              boxShadow: "0 0 20px rgba(129,212,250,0.8)"
-            }}
-          />
-        </div>
-
-        <h1 style={{ fontSize: 42, fontWeight: 800 }}>
-          Quỳnh Anh&apos;s Physics Assistant
-        </h1>
-
-        <p style={{ fontSize: 20, fontStyle: "italic", color: "#4fc3f7" }}>
-          “Vật lý không khó – quan trọng là hiểu đúng bản chất”
-        </p>
-
-        <p style={{ marginTop: 12, fontSize: 20, fontWeight: 700, color: "#ff5252" }}>
-          Trường Đại học Phạm Văn Đồng
-        </p>
-
-        <p style={{ fontSize: 18, fontWeight: 600, color: "#ce93d8" }}>
-          Sinh viên: Đỗ Lâm Quỳnh Anh
-        </p>
-
-        <p style={{ fontSize: 18, fontWeight: 700, color: "#ffd54f" }}>
-          Zalo: 0984307629
-        </p>
-      </header>
-
-      {/* PROGRESS */}
-      <div
-        style={{
-          maxWidth: 860,
-          margin: "0 auto 32px",
-          height: 10,
-          borderRadius: 8,
-          background: "rgba(255,255,255,0.2)"
-        }}
-      >
-        <div
-          style={{
-            width: progress,
-            height: "100%",
-            borderRadius: 8,
-            background: "linear-gradient(90deg,#00e5ff,#00c853)",
-            transition: "width 0.4s ease"
-          }}
-        />
-      </div>
-
-      <div style={{ maxWidth: 860, margin: "0 auto" }}>
-        {!grade && (
-          <Card title="Bước 1 – Chọn lớp">
-            <OptionList
-              items={["Lớp 10", "Lớp 11", "Lớp 12"]}
-              onSelect={(i) => setGrade(i + 10)}
-            />
-          </Card>
-        )}
-
-        {grade && chapterIndex === null && (
-          <Card title="Bước 2 – Chọn chương">
-            <OptionList
-              items={chapters.map((c) => c.name)}
-              onSelect={setChapterIndex}
-            />
-          </Card>
-        )}
-
-        {chapterIndex !== null && lessonIndex === null && (
-          <Card title="Bước 3 – Chọn bài">
-            <OptionList
-              items={lessons.map((l) => l.name)}
-              onSelect={setLessonIndex}
-            />
-          </Card>
-        )}
-
-        {lessonIndex !== null && (
-          <Card title="Cấu hình đề">
-            <label style={{ display: "flex", gap: 12 }}>
-              <input
-                type="checkbox"
-                checked={includeExam}
-                onChange={(e) => setIncludeExam(e.target.checked)}
-              />
-              Bao gồm câu hỏi TN THPT
-            </label>
-
-            {includeExam && (
-              <select
-                style={{ marginTop: 12 }}
-                value={examYears}
-                onChange={(e) =>
-                  setExamYears(Number(e.target.value) as 1 | 3 | 5)
-                }
-              >
-                <option value={1}>1 năm</option>
-                <option value={3}>3 năm</option>
-                <option value={5}>5 năm</option>
-              </select>
-            )}
-
-            <button
-              onClick={handleGenerate}
-              style={{
-                marginTop: 24,
-                width: "100%",
-                padding: 18,
-                fontSize: 22,
-                fontWeight: 800,
-                borderRadius: 16,
-                border: "none",
-                background: "linear-gradient(90deg,#00e5ff,#00c853)"
-              }}
-            >
-              🚀 Generate Worksheet
-            </button>
-          </Card>
-        )}
-      </div>
-    </main>
+      🔁 {label}
+    </button>
   );
 }
